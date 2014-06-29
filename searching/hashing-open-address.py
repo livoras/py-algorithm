@@ -6,7 +6,8 @@ class Hash():
 
     def put(self, key, value):
         slot = self.hash(key)
-        if not self.slots[slot]:
+        data = self.slots[slot]
+        if not data or data[0] == key:
             # 0 - to store key, 1 - to store value
             self.slots[slot] = [key, value]
         else:
@@ -14,7 +15,8 @@ class Hash():
             while True:
                 if slot == next_slot:
                     raise ValueError("Hashtable is full.")
-                if not self.slots[next_slot]:
+                data = self.slots[next_slot]
+                if not data or data[0] == key:
                     self.slots[next_slot] = [key, value]
                     return True
                 next_slot = self.rehash(next_slot)
@@ -87,3 +89,21 @@ assert h.slots[h.stoi("fuck") % 20 + 1] == None
 h.delete("fuck")
 assert h.slots[h.stoi("fuck") % 20] == None
 
+iofhello = h.stoi("hello")
+h["hello"] = "I am not afraid!"
+assert h.slots[iofhello % 20][0] == "hello"
+
+h["oellh"] = "LUC>>>"
+assert h.slots[(iofhello + 1) % 20][0] == "oellh"
+
+# Here is a bug, if you delete the one key, then the slot is empty. 
+# After that if you insert the key with the same hash value, then there could be duplicated key.
+h["hello"] = "I am afraid!"
+assert h.slots[iofhello % 20][0] == "hello"
+assert h.slots[iofhello % 20][1] == "I am afraid!"
+
+h.delete("hello")
+assert h.slots[iofhello % 20] == None
+
+h["oellh"] = "come on!" # --> bug, "oellh" will occur twice in the slots.
+assert h.slots[iofhello % 20 + 1][1] == "come on!" # --> assertion fails.
