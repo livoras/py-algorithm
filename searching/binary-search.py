@@ -1,5 +1,11 @@
 #-*- coding: utf-8 -*-
 def binary_search(arr, item):
+'''
+Using two cursor `left` and `right` and continously ajust them
+by comparing the middle position between them util left is less 
+than right or util the value of middle position is the same as
+the value to be looked for.
+'''
     left = 0
     right = len(arr) - 1
     while left <= right:
